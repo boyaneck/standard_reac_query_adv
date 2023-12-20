@@ -1,3 +1,2 @@
-1. git clone
-2. npm i 불가시 npm i --force
-3. json-server --watch db.json --port 4000
+1.useMutation 중앙관리
+2.상세페이지에서 useQuery를 통해 데이터 뿌려주기
