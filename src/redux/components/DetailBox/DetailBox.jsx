@@ -2,6 +2,9 @@ import React, { useEffect } from "react";
 import { StyledDiv, StyledTable, StyledTh, StyledButton } from "./styles";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { useQuery } from "react-query";
+import { getTodos } from "../../../api/todos";
+import { QUERY_KEYS } from "../../../query/keys.constant";
 
 /**
  * 컴포넌트 개요 : Todo 메인 컴포넌트에서 각 todo item의 [상세보기]를 선택했을 경우 보이는 컴포넌트 영역
@@ -17,9 +20,15 @@ function DetailBox() {
   const params = useParams();
 
   // 이 컴포넌트에서 아이템을 사용하기 위해, params로 전달받은 id를 이용-todo를 filtering
-  const filteredTodos = useSelector((state) => {
-    return state.todos.filter((item) => item.id === params.id);
-  });
+
+  //state.todos에 값이 없어서 생기는 문제,
+  //store에서 관리해주는데이터가 없다->useQuery를 통해 데이터를 가져오자
+  const { isLoading, isError, data } = useQuery(QUERY_KEYS.TODOS, getTodos);
+  const filteredTodos = data.filter((list) => list.id === params.id);
+  console.log("fitlredTodos", filteredTodos);
+  // const filteredTodos = useSelector((state) => {
+  //   return state?.todos.filter((item) => item.id === params.id);
+  // });
 
   // 화면이 최초 렌더링 되는 시점에 올바르지 않은 접근을 차단
   // 지금은 uuidv4()를 사용해서 새로고침할 때 마다 변경 -> DB 또는 Cookie 등 사용하면 해결
@@ -48,11 +57,11 @@ function DetailBox() {
         </tr>
         <tr>
           <StyledTh>ID</StyledTh>
-          <StyledTh>{todo?.id}</StyledTh>
+          <StyledTh>{filteredTodos?.id}</StyledTh>
         </tr>
         <tr>
           <StyledTh>TITLE</StyledTh>
-          <StyledTh>{todo?.title}</StyledTh>
+          <StyledTh>{filteredTodos?.title}</StyledTh>
         </tr>
         <tr>
           <StyledTh>CONTENTS</StyledTh>
@@ -60,7 +69,7 @@ function DetailBox() {
         </tr>
         <tr>
           <StyledTh>완료여부</StyledTh>
-          <StyledTh>{todo?.isDone ? "완료" : "미완료"}</StyledTh>
+          <StyledTh>{filteredTodos?.isDone ? "완료" : "미완료"}</StyledTh>
         </tr>
       </StyledTable>
       <StyledButton onClick={handleButtonClick}>
